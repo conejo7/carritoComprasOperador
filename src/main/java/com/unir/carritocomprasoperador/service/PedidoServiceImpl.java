@@ -40,44 +40,46 @@ public class PedidoServiceImpl implements PedidoService {
     @Override
     public String createPedido(RequestPedido request) {
 
-//        Pedido pedido = new Pedido();
-//        pedido.setClienteId(Integer.parseInt(request.getCliente()));
-//        pedido.setPedFecha(LocalDate.now());
-//        Pedido finalPedido = pedidoRepository.save(pedido);
-//        List<ResponseProductSimple> products1 = request.getDetallePedido().stream()
-//                .map(elem -> {
-//                    ResponseProductSimple responseProductSimple = operadorFacade.getPedido(elem.getIdProducto());
-//                    if (responseProductSimple.getProSimCantidad()>0){
-//                        PedidoDetalle pedidoDetalle = new PedidoDetalle();
-//                        pedidoDetalle.setPedId(finalPedido.getPedId());
-//                        pedidoDetalle.setPedDetCatidad(elem.getCantidadProducto());
-//                        pedidoDetalleRepository.save(pedidoDetalle);
-//                        return responseProductSimple;
-//                    }else {
-//                        return null;
-//                    }
-//                })
-//                .filter(Objects::nonNull)
-//                .collect(Collectors.toList());
-
-        List<ResponseProductSimple> products1 = new ArrayList<>();
+        //CODIGO PROFE
         Pedido pedido = new Pedido();
         pedido.setClienteId(Integer.parseInt(request.getCliente()));
         pedido.setPedFecha(LocalDate.now());
         Pedido finalPedido = pedidoRepository.save(pedido);
-        for (DetallePedidoItem elem : request.getDetallePedido()) {
-            ResponseProductSimple responseProductSimple = operadorFacade.getPedido(elem.getIdProducto());
+        List<ResponseProductSimple> products1 = request.getDetallePedido().stream()
+                .map(elem -> {
+                    ResponseProductSimple responseProductSimple = operadorFacade.getPedido(elem.getIdProducto());
+                    if (responseProductSimple.getProSimCantidad()>0){
+                        PedidoDetalle pedidoDetalle = new PedidoDetalle();
+                        pedidoDetalle.setPedId(finalPedido.getPedId());
+                        pedidoDetalle.setPedDetCatidad(elem.getCantidadProducto());
+                        pedidoDetalleRepository.save(pedidoDetalle);
+                        return responseProductSimple;
+                    }else {
+                        return null;
+                    }
+                })
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
 
-                PedidoDetalle pedidoDetalle = new PedidoDetalle();
-                pedidoDetalle.setPedId(pedido.getPedId());
-                pedidoDetalle.setPedDetCatidad(elem.getCantidadProducto());
-                pedidoDetalleRepository.save(pedidoDetalle);
-
-
-            if (responseProductSimple != null && responseProductSimple.getProSimCantidad()>0) {
-                products1.add(responseProductSimple);
-            }
-        }
+        //CODIGO MIO
+//        List<ResponseProductSimple> products1 = new ArrayList<>();
+//        Pedido pedido = new Pedido();
+//        pedido.setClienteId(Integer.parseInt(request.getCliente()));
+//        pedido.setPedFecha(LocalDate.now());
+//        Pedido finalPedido = pedidoRepository.save(pedido);
+//        for (DetallePedidoItem elem : request.getDetallePedido()) {
+//            ResponseProductSimple responseProductSimple = operadorFacade.getPedido(elem.getIdProducto());
+//
+//                PedidoDetalle pedidoDetalle = new PedidoDetalle();
+//                pedidoDetalle.setPedId(pedido.getPedId());
+//                pedidoDetalle.setPedDetCatidad(elem.getCantidadProducto());
+//                pedidoDetalleRepository.save(pedidoDetalle);
+//
+//
+//            if (responseProductSimple != null && responseProductSimple.getProSimCantidad()>0) {
+//                products1.add(responseProductSimple);
+//            }
+//        }
 
         System.out.println("products"+products1.toString());
         return products1.size() == request.getDetallePedido().size() ? "OK" : "NO HAY STOCK PARA EL PRODUCTO";
