@@ -1,21 +1,20 @@
 package com.unir.carritocomprasoperador.model.pojo;
 
+
 import jakarta.persistence.*;
 import lombok.Data;
 
-import java.util.Objects;
-
 @Data
 @Entity
-@Table(name = "pedido_detalle", schema = "carrito_operador", catalog = "")
-public class PedidoDetalle {
+@Table(name = "pedir", schema = "carrito_operador", catalog = "")
+public class Pedir {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
     @Column(name = "ped_det_id")
-    private long pedDetId;
+    private int pedDetId;
     @Basic
     @Column(name = "ped_id")
-    private long pedId;
+    private int pedId;
     @Basic
     @Column(name = "ped_det_catidad")
     private Integer pedDetCatidad;

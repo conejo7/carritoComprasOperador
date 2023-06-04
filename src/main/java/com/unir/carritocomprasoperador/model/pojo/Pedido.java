@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Data;
 
 import java.sql.Timestamp;
+import java.time.LocalDate;
 
 
 @Data
@@ -25,7 +26,7 @@ public class Pedido {
     private int clienteId;
     @Basic
     @Column(name = "ped_fecha")
-    private Timestamp pedFecha;
+    private LocalDate pedFecha;
     @Basic
     @Column(name = "ped_estado")
     private Integer pedEstado;

@@ -1,12 +1,18 @@
 package com.unir.carritocomprasoperador.controller;
 
+import com.unir.carritocomprasoperador.model.exception.ApiError;
 import com.unir.carritocomprasoperador.model.pojo.Pedido;
+import com.unir.carritocomprasoperador.model.request.RequestPedido;
+import com.unir.carritocomprasoperador.model.request.RequestPedir;
 import com.unir.carritocomprasoperador.service.PedidoService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Collections;
@@ -27,17 +33,29 @@ public class PedidoController {
         return "test2";
     }
 
-    @GetMapping("/pedidos")
-    public ResponseEntity<List<Pedido>> getProducts() {
+    @GetMapping("/savePedido")
+    public ResponseEntity<String> savePedido(@RequestBody RequestPedido request) {
 
-        //log.info("headers: {}", headers);
-        List<Pedido> pedidos = service.getPedidoByEstado();
-
-        if (pedidos != null) {
+        String pedidos = service.createPedido(request);
+        String sErrorMsg = "No hay stock";
+        if (pedidos != null && "OK".equals(pedidos)) {
             return ResponseEntity.ok(pedidos);
         } else {
-            return ResponseEntity.ok(Collections.emptyList());
+            return ResponseEntity.badRequest().body(sErrorMsg);
         }
+    }
+
+    @PostMapping("/getPedidos")
+    public ResponseEntity<String> createOrder(@RequestBody RequestPedido request) {
+
+        String result = service.createPedido(request);
+
+        if(request != null && "OK".equals(result)) {
+            return ResponseEntity.ok(result);
+        } else {
+            return ResponseEntity.badRequest().build();
+        }
+
     }
 
 
