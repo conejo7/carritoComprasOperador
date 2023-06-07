@@ -70,17 +70,19 @@ public class PedidoServiceImpl implements PedidoService {
         for (DetallePedidoItem elem : request.getDetallePedido()) {
             ResponseProductSimple responseProductSimple = operadorFacade.getPedido(elem.getIdProducto());
 
-                PedidoDetalle pedidoDetalle = new PedidoDetalle();
-                pedidoDetalle.setPedId(finalPedido.getPedId());
-                pedidoDetalle.setPedDetCatidad(elem.getCantidadProducto());
-                pedidoDetalleRepository.save(pedidoDetalle);
+            PedidoDetalle pedidoDetalle = new PedidoDetalle();
+            pedidoDetalle.setPedId(finalPedido.getPedId());
+            pedidoDetalle.setPedDetCatidad(elem.getCantidadProducto());
+            pedidoDetalle.setPedDetProducto(elem.getIdProducto());
+            pedidoDetalle.setPedDetDescripcion("todo ok");
+            pedidoDetalleRepository.save(pedidoDetalle);
 
-            if (responseProductSimple != null && responseProductSimple.getProSimCantidad()>0) {
+            if (responseProductSimple != null && responseProductSimple.getProSimCantidad() > 0) {
                 products1.add(responseProductSimple);
             }
         }
 
-        System.out.println("products"+products1.toString());
+        System.out.println("products" + products1.toString());
         return products1.size() == request.getDetallePedido().size() ? "OK" : "NO HAY STOCK PARA EL PRODUCTO";
     }
 
@@ -88,9 +90,6 @@ public class PedidoServiceImpl implements PedidoService {
     public Pedido getPedidoById(String pedidoId) {
         return pedidoRepository.findById(Long.valueOf(pedidoId)).orElse(null);
     }
-
-
-
 
 
 }
