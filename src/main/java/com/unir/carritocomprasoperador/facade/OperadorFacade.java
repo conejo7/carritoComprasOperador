@@ -6,11 +6,9 @@ import com.unir.carritocomprasoperador.model.response.ResponseProductSimple;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import netscape.javascript.JSObject;
-import org.apache.hc.core5.http.HttpEntity;
+
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.MediaType;
+import org.springframework.http.*;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
@@ -32,21 +30,32 @@ public class OperadorFacade {
 
         try {
 
-            System.out.println(restTemplate.getForObject(String.format(addProductUrl, id), ResponseProductSimple.class));
-            return restTemplate.getForObject(String.format(addProductUrl, id), ResponseProductSimple.class);
+            System.out.println(restTemplate.getForObject(String.format(getProductUrl, id), ResponseProductSimple.class));
+            return restTemplate.getForObject(String.format(getProductUrl, id), ResponseProductSimple.class);
         } catch (HttpClientErrorException e) {
             log.error("Client Error: {}, Product with ID {}", e.getStatusCode(), id);
             return null;
         }
     }
 
-
-    public ResponseProductSimple minusAmountProduct(String id) {
-
+    public ResponseEntity minusAmountProduct(String id) {
         try {
 
-            System.out.println(restTemplate.getForObject(String.format(addProductUrl, id), ResponseProductSimple.class));
-            return restTemplate.getForObject(String.format(addProductUrl, id), ResponseProductSimple.class);
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_JSON);
+
+
+            ResponseProductSimple responseProductSimple=new ResponseProductSimple();
+            HttpEntity<ResponseProductSimple> requestEntity = new HttpEntity<ResponseProductSimple>(responseProductSimple, headers);
+            ResponseEntity<String> responseEntity = restTemplate.exchange(addProductUrl, HttpMethod.PUT, requestEntity, String.class);
+            if (responseEntity.getStatusCode().is2xxSuccessful()) {
+                String responseBody = responseEntity.getBody();
+                System.out.println("Respuesta: " + responseBody);
+            } else {
+                System.out.println("La solicitud falló con el código de estado: " + responseEntity.getStatusCodeValue());
+            }
+            return responseEntity;
+            //return restTemplate.exchange(String.format(addProductUrl, id), ResponseProductSimple.class);
         } catch (HttpClientErrorException e) {
             log.error("Client Error: {}, Product with ID {}", e.getStatusCode(), id);
             return null;
