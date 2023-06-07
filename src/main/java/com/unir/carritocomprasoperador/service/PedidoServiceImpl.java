@@ -82,6 +82,8 @@ public class PedidoServiceImpl implements PedidoService {
             }
         }
 
+
+
         System.out.println("products" + products1.toString());
         return products1.size() == request.getDetallePedido().size() ? "OK" : "NO HAY STOCK PARA EL PRODUCTO";
     }
