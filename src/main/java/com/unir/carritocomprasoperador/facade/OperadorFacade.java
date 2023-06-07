@@ -38,19 +38,20 @@ public class OperadorFacade {
         }
     }
 
-    public ResponseEntity minusAmountProduct(String id) {
+    public ResponseEntity minusAmountProduct(String id,Integer cantidad) {
         try {
 
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
-
-
             ResponseProductSimple responseProductSimple=new ResponseProductSimple();
+            responseProductSimple.setProSimCantidad(cantidad);
             HttpEntity<ResponseProductSimple> requestEntity = new HttpEntity<ResponseProductSimple>(responseProductSimple, headers);
-            ResponseEntity<String> responseEntity = restTemplate.exchange(addProductUrl, HttpMethod.PUT, requestEntity, String.class);
+            String url= String.format(addProductUrl,id);
+            ResponseEntity<ResponseProductSimple> responseEntity = restTemplate.exchange("http://localhost:8083/products/2", HttpMethod.PUT, requestEntity, ResponseProductSimple.class);
+
             if (responseEntity.getStatusCode().is2xxSuccessful()) {
-                String responseBody = responseEntity.getBody();
-                System.out.println("Respuesta: " + responseBody);
+                //String responseBody = responseEntity.getBody();
+                System.out.println("Respuesta: " );
             } else {
                 System.out.println("La solicitud falló con el código de estado: " + responseEntity.getStatusCodeValue());
             }

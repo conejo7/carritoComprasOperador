@@ -10,6 +10,7 @@ import com.unir.carritocomprasoperador.model.request.RequestPedido;
 import com.unir.carritocomprasoperador.model.request.RequestPedir;
 import com.unir.carritocomprasoperador.model.response.ResponseProductSimple;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -69,7 +70,7 @@ public class PedidoServiceImpl implements PedidoService {
         Pedido finalPedido = pedidoRepository.save(pedido);
         for (DetallePedidoItem elem : request.getDetallePedido()) {
             ResponseProductSimple responseProductSimple = operadorFacade.getPedido(elem.getIdProducto());
-
+            System.out.println("respon"+responseProductSimple.toString());
             PedidoDetalle pedidoDetalle = new PedidoDetalle();
             pedidoDetalle.setPedId(finalPedido.getPedId());
             pedidoDetalle.setPedDetCatidad(elem.getCantidadProducto());
@@ -80,7 +81,20 @@ public class PedidoServiceImpl implements PedidoService {
             if (responseProductSimple != null && responseProductSimple.getProSimCantidad() > 0) {
                 products1.add(responseProductSimple);
             }
+
+            System.out.println("responseProductSimple.getProSimCantidad()-elem.getCantidadProducto()"+responseProductSimple.getProSimCantidad()+" "+elem.getCantidadProducto());
+            ResponseEntity responseProductSimple1 = operadorFacade.minusAmountProduct(elem.getIdProducto(),responseProductSimple.getProSimCantidad()-elem.getCantidadProducto());
+            //responseProductSimple1.getBody().toString();
         }
+
+        //actualizar
+//        for (DetallePedidoItem elem : request.getDetallePedido()) {
+//            ResponseEntity responseProductSimple1 = operadorFacade.minusAmountProduct(elem.getIdProducto());
+//            responseProductSimple1.getBody().toString();
+//        }
+
+
+
 
 
 
