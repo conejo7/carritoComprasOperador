@@ -11,4 +11,6 @@ public interface PedidoService {
 
     String createPedido(RequestPedido request);
 
+    Pedido getPedidoById(String pedidoId);
+
 }

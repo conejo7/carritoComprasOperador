@@ -31,7 +31,9 @@ public class Cliente {
     @Basic
     @Column(name = "cli_fecha_nacimiento")
     private Timestamp cliFechaNacimiento;
-
+    @Basic
+    @Column(name = "cli_cedula")
+    private String cliCedula;
 
 
 }

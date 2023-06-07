@@ -9,5 +9,7 @@ public interface PedidoRepository extends JpaRepository<Pedido,Long> {
 
     List<Pedido> findByPedEstado(Integer estado);
 
+    //Pedido findByPedId(String pedidoId);
+
 
 }

@@ -19,9 +19,6 @@ public class Pedido {
     @Column(name = "dev_id")
     private Integer devId;
     @Basic
-    @Column(name = "tra_env_id")
-    private Integer traEnvId;
-    @Basic
     @Column(name = "cliente_id")
     private int clienteId;
     @Basic
