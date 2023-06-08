@@ -10,6 +10,8 @@ public interface PedidoService {
     List<Pedido> getPedidoByEstado();
 
     String createPedido(RequestPedido request);
+    String devolverPedido(String pedidoId);
+
 
     Pedido getPedidoById(String pedidoId);
 

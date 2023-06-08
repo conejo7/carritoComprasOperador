@@ -29,8 +29,6 @@ public class OperadorFacade {
     public ResponseProductSimple getPedido(String id) {
 
         try {
-
-            System.out.println(restTemplate.getForObject(String.format(getProductUrl, id), ResponseProductSimple.class));
             return restTemplate.getForObject(String.format(getProductUrl, id), ResponseProductSimple.class);
         } catch (HttpClientErrorException e) {
             log.error("Client Error: {}, Product with ID {}", e.getStatusCode(), id);
@@ -38,28 +36,22 @@ public class OperadorFacade {
         }
     }
 
-    public ResponseEntity minusAmountProduct(String id,Integer cantidad) {
+    public void minusAmountProduct(String id,Integer cantidad) {
         try {
-
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
             ResponseProductSimple responseProductSimple=new ResponseProductSimple();
             responseProductSimple.setProSimCantidad(cantidad);
-            HttpEntity<ResponseProductSimple> requestEntity = new HttpEntity<ResponseProductSimple>(responseProductSimple, headers);
-            String url= String.format(addProductUrl,id);
-            ResponseEntity<ResponseProductSimple> responseEntity = restTemplate.exchange("http://localhost:8083/products/2", HttpMethod.PUT, requestEntity, ResponseProductSimple.class);
-
+            HttpEntity<ResponseProductSimple> requestEntity = new HttpEntity<>(responseProductSimple, headers);
+            String url= String.format(getProductUrl,id);
+            ResponseEntity<ResponseProductSimple> responseEntity = restTemplate.exchange(url, HttpMethod.PUT, requestEntity, ResponseProductSimple.class);
             if (responseEntity.getStatusCode().is2xxSuccessful()) {
-                //String responseBody = responseEntity.getBody();
-                System.out.println("Respuesta: " );
+                log.info("Actualizado");
             } else {
-                System.out.println("La solicitud falló con el código de estado: " + responseEntity.getStatusCodeValue());
+                log.info("La solicitud falló con el código de estado:" +responseEntity.getStatusCode());
             }
-            return responseEntity;
-            //return restTemplate.exchange(String.format(addProductUrl, id), ResponseProductSimple.class);
         } catch (HttpClientErrorException e) {
             log.error("Client Error: {}, Product with ID {}", e.getStatusCode(), id);
-            return null;
         }
     }
 

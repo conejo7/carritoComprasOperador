@@ -20,27 +20,19 @@ public class PedidoController {
 
     private final ClienteService serviceCliente;
 
-    @GetMapping("/test")
-    public String hola() {
-        //logger.info("Funcionando");
-        return "test2";
-    }
-
     @PostMapping("/savePedido")
     public ResponseEntity<String> savePedido(@RequestBody RequestPedido request) {
 
         String pedidos = service.createPedido(request);
-        String sErrorMsg = "No hay stock";
         if (pedidos != null && "OK".equals(pedidos)) {
             return ResponseEntity.ok(pedidos);
         } else {
-            return ResponseEntity.badRequest().body(sErrorMsg);
+            return ResponseEntity.badRequest().body(pedidos);
         }
     }
 
     @GetMapping("/getPedidos/{pedidoId}")
     public ResponseEntity<Pedido> getOrder(@PathVariable String pedidoId) {
-        log.info("Request received for pedido {}", pedidoId);
         Pedido pedido = service.getPedidoById(pedidoId);
         if (pedido != null) {
             return ResponseEntity.ok(pedido);
@@ -52,7 +44,6 @@ public class PedidoController {
 
     @GetMapping("/getCliente/{clienteId}")
     public ResponseEntity<Cliente> getCliente(@PathVariable String clienteId) {
-        log.info("Request received for pedido {}", clienteId);
         Cliente cliente = serviceCliente.getClientebyId(clienteId);
         if (cliente != null) {
             return ResponseEntity.ok(cliente);
@@ -60,6 +51,18 @@ public class PedidoController {
             return ResponseEntity.notFound().build();
         }
     }
+
+
+    @PostMapping("/devolverPedido/{pedidoId}")
+    public ResponseEntity<String> devolverPedido(@PathVariable String pedidoId) {
+        String pedidoDevuelto = service.devolverPedido(pedidoId);
+        if (pedidoDevuelto != null) {
+            return ResponseEntity.ok(pedidoDevuelto);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
 
 
 

@@ -1,15 +1,16 @@
 package com.unir.carritocomprasoperador.service;
 
+import com.unir.carritocomprasoperador.data.DevolucionRepository;
 import com.unir.carritocomprasoperador.data.PedidoDetalleRepository;
 import com.unir.carritocomprasoperador.data.PedidoRepository;
 import com.unir.carritocomprasoperador.facade.OperadorFacade;
+import com.unir.carritocomprasoperador.model.pojo.Devolucion;
 import com.unir.carritocomprasoperador.model.pojo.Pedido;
 import com.unir.carritocomprasoperador.model.pojo.PedidoDetalle;
 import com.unir.carritocomprasoperador.model.request.DetallePedidoItem;
 import com.unir.carritocomprasoperador.model.request.RequestPedido;
 import com.unir.carritocomprasoperador.model.response.ResponseProductSimple;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -26,82 +27,62 @@ public class PedidoServiceImpl implements PedidoService {
     private OperadorFacade operadorFacade;
     @Autowired
     private PedidoDetalleRepository pedidoDetalleRepository;
+    @Autowired
+    private DevolucionRepository devolucionRepository;
 
     @Override
     public List<Pedido> getPedidoByEstado() {
         List<Pedido> pedidosList = pedidoRepository.findByPedEstado(1);
-        System.out.println(pedidosList);
         return pedidosList.isEmpty() ? null : pedidosList;
     }
 
 
     @Override
     public String createPedido(RequestPedido request) {
-
-        //CODIGO PROFE
-//        Pedido pedido = new Pedido();
-//        pedido.setClienteId(Integer.parseInt(request.getCliente()));
-//        pedido.setPedFecha(LocalDate.now());
-//        Pedido finalPedido = pedidoRepository.save(pedido);
-//        List<ResponseProductSimple> products1 = request.getDetallePedido().stream()
-//                .map(elem -> {
-//                    ResponseProductSimple responseProductSimple = operadorFacade.getPedido(elem.getIdProducto());
-//                    if (responseProductSimple.getProSimCantidad()>0){
-//                        PedidoDetalle pedidoDetalle = new PedidoDetalle();
-//                        pedidoDetalle.setPedId(finalPedido.getPedId());
-//                        pedidoDetalle.setPedDetCatidad(elem.getCantidadProducto());
-//                        pedidoDetalleRepository.save(pedidoDetalle);
-//                        return responseProductSimple;
-//                    }else {
-//                        return null;
-//                    }
-//                })
-//                .filter(Objects::nonNull)
-//                .collect(Collectors.toList());
-
-        //CODIGO MIO
         List<ResponseProductSimple> products1 = new ArrayList<>();
+        List<String> productsSinStock = new ArrayList<>();
         Pedido pedido = new Pedido();
         pedido.setClienteId(Integer.parseInt(request.getCliente()));
         pedido.setPedFecha(LocalDate.now());
         Pedido finalPedido = pedidoRepository.save(pedido);
         for (DetallePedidoItem elem : request.getDetallePedido()) {
-            ResponseProductSimple responseProductSimple = operadorFacade.getPedido(elem.getIdProducto());
-            System.out.println("respon"+responseProductSimple.toString());
+            ResponseProductSimple productSimple = operadorFacade.getPedido(elem.getIdProducto());
             PedidoDetalle pedidoDetalle = new PedidoDetalle();
             pedidoDetalle.setPedId(finalPedido.getPedId());
             pedidoDetalle.setPedDetCatidad(elem.getCantidadProducto());
             pedidoDetalle.setPedDetProducto(elem.getIdProducto());
             pedidoDetalle.setPedDetDescripcion("todo ok");
             pedidoDetalleRepository.save(pedidoDetalle);
-
-            if (responseProductSimple != null && responseProductSimple.getProSimCantidad() > 0) {
-                products1.add(responseProductSimple);
+            if (productSimple != null) {
+                if (productSimple.getProSimCantidad() > 0 && (productSimple.getProSimCantidad() - elem.getCantidadProducto()) >= 0) {
+                    products1.add(productSimple);
+                    operadorFacade.minusAmountProduct(elem.getIdProducto(), productSimple.getProSimCantidad() - elem.getCantidadProducto());
+                }else {
+                    productsSinStock.add(String.valueOf(productSimple.getProSimId()));
+                }
             }
-
-            System.out.println("responseProductSimple.getProSimCantidad()-elem.getCantidadProducto()"+responseProductSimple.getProSimCantidad()+" "+elem.getCantidadProducto());
-            ResponseEntity responseProductSimple1 = operadorFacade.minusAmountProduct(elem.getIdProducto(),responseProductSimple.getProSimCantidad()-elem.getCantidadProducto());
-            //responseProductSimple1.getBody().toString();
         }
-
-        //actualizar
-//        for (DetallePedidoItem elem : request.getDetallePedido()) {
-//            ResponseEntity responseProductSimple1 = operadorFacade.minusAmountProduct(elem.getIdProducto());
-//            responseProductSimple1.getBody().toString();
-//        }
-
-
-
-
-
-
-        System.out.println("products" + products1.toString());
-        return products1.size() == request.getDetallePedido().size() ? "OK" : "NO HAY STOCK PARA EL PRODUCTO";
+        return products1.size() == request.getDetallePedido().size() ? "OK" : "NO HAY STOCK PARA EL PRODUCTO CON ID" + productsSinStock.toString();
     }
 
     @Override
     public Pedido getPedidoById(String pedidoId) {
         return pedidoRepository.findById(Long.valueOf(pedidoId)).orElse(null);
+    }
+
+    @Override
+    public String devolverPedido(String pedidoId) {
+        Devolucion devolucion = new Devolucion();
+        devolucion.setPedId(Integer.parseInt(pedidoId));
+        devolucion.setDevFecha(LocalDate.now());
+        devolucion.setDevEstado(0);
+        List<PedidoDetalle> pedidoDetalle = pedidoDetalleRepository.findAllByPedId(pedidoId);
+        pedidoDetalle.forEach(elem -> {
+            ResponseProductSimple productSimple = operadorFacade.getPedido(elem.getPedDetProducto());
+            operadorFacade.minusAmountProduct(String.valueOf(productSimple.getProSimId()), productSimple.getProSimCantidad() + elem.getPedDetCatidad());
+        });
+        devolucionRepository.save(devolucion);
+        return "ok";
     }
 
 
