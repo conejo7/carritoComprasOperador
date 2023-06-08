@@ -1,21 +1,14 @@
 package com.unir.carritocomprasoperador.controller;
 
-import com.unir.carritocomprasoperador.model.exception.ApiError;
 import com.unir.carritocomprasoperador.model.pojo.Cliente;
 import com.unir.carritocomprasoperador.model.pojo.Pedido;
 import com.unir.carritocomprasoperador.model.request.RequestPedido;
-import com.unir.carritocomprasoperador.model.request.RequestPedir;
 import com.unir.carritocomprasoperador.service.ClienteService;
 import com.unir.carritocomprasoperador.service.PedidoService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Collections;
-import java.util.List;
-
 
 
 @RestController

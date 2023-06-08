@@ -7,7 +7,6 @@ import com.unir.carritocomprasoperador.model.pojo.Pedido;
 import com.unir.carritocomprasoperador.model.pojo.PedidoDetalle;
 import com.unir.carritocomprasoperador.model.request.DetallePedidoItem;
 import com.unir.carritocomprasoperador.model.request.RequestPedido;
-import com.unir.carritocomprasoperador.model.request.RequestPedir;
 import com.unir.carritocomprasoperador.model.response.ResponseProductSimple;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -15,8 +14,6 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
 
 @Service
 public class PedidoServiceImpl implements PedidoService {
