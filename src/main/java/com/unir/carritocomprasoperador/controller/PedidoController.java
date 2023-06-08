@@ -26,7 +26,7 @@ public class PedidoController {
         return "test2";
     }
 
-    @GetMapping("/savePedido")
+    @PostMapping("/savePedido")
     public ResponseEntity<String> savePedido(@RequestBody RequestPedido request) {
 
         String pedidos = service.createPedido(request);
